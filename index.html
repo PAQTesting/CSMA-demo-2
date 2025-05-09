@@ -72,23 +72,54 @@
     </div>
 
     <!-- Screen 4 -->
-    <div id="step4" class="hidden space-y-4">
-      <h2 class="text-2xl font-bold">Take or upload a photo</h2>
-      <input id="photo" type="file" accept="image/*" capture="environment" class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" />
-      <img id="preview" class="w-full rounded border border-black hidden aspect-square object-cover" />
-      <button onclick="savePhoto()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Upload</button>
-      <div class="text-xs text-left max-h-[300px] overflow-y-scroll border border-black p-3 rounded">
-        <p><strong>Photograph and Publicity Waiver and Release Form</strong></p>
-        <p>I, ________________________, give PRECISIONeffect, Inc. dba Precision AQ. permission to use my name, likeness, image, voice, and/or appearance in photos or videos...</p>
-        <p>I give my consent to use my name and likeness to promote PRECISIONeffect programs and/or activities.</p>
-        <br />
-        <p>___________________________________________ &nbsp; ________________</p>
-        <p>Signature &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Date</p>
-        <br />
-        <p>___________________________________________ &nbsp; ________________</p>
-        <p>Parent / Legal Guardian (if under 18) &nbsp; &nbsp; Date</p>
-      </div>
-    </div>
+<div id="step4" class="hidden space-y-6">
+  <h2 class="text-2xl font-bold">Take or upload a photo</h2>
+
+  <input id="photo" type="file" accept="image/*" capture="environment"
+         class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" />
+  <img id="preview" class="w-full rounded border border-black hidden aspect-square object-cover" />
+
+  <div class="space-y-4 text-left text-sm leading-relaxed">
+    <h3 class="text-base font-bold">Photograph and Publicity Waiver and Release Form</h3>
+
+    <p>
+      I, <input id="waiverName" class="border-b-2 border-black bg-transparent w-auto px-1 mx-1 font-semibold" />
+      give PRECISIONeffect, Inc. dba Precision AQ (“Precision”) permission to use my name, likeness,
+      image, voice, and/or appearance in any media taken on behalf of Precision or its client Scholar Rock, Inc.,
+      without compensation to me.
+    </p>
+
+    <p>
+      I agree that Precision owns these materials and may use them for purposes consistent with its mission,
+      including exhibitions, advertisements, publications, and digital content. I understand that I may be
+      identified by name and waive any rights to approve or receive payment.
+    </p>
+
+    <p>
+      This release is binding on me and my heirs, assigns, and personal representatives.
+    </p>
+
+    <p>
+      <strong>Today's Date:</strong>
+      <span id="waiverDate" class="ml-2 font-semibold"></span>
+    </p>
+
+    <label class="block mt-2 font-medium">
+      Parent / Legal Guardian (if under 18):
+      <input id="guardianName" class="w-full border-b-2 border-black bg-transparent mt-1 p-1" placeholder="Enter name if applicable" />
+    </label>
+
+    <label class="flex items-start gap-2 mt-2">
+      <input type="checkbox" id="waiverAgree" class="mt-1" />
+      <span class="text-sm">I agree to the above terms and give my consent.</span>
+    </label>
+  </div>
+
+  <button onclick="savePhoto()"
+          class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">
+    Upload
+  </button>
+</div>
 
     <!-- Screen 5 -->
     <div id="step5" class="hidden space-y-4">
@@ -143,14 +174,31 @@
     }
   }
 
-  function savePhoto() {
-    if (!userData.photo) {
-      alert("Please upload or take a photo.");
-      return;
-    }
-    drawFinalImage();
-    nextStep();
+function savePhoto() {
+  const agreed = document.getElementById('waiverAgree').checked;
+  if (!agreed) {
+    alert("You must agree to the photo release terms to continue.");
+    return;
   }
+  // Store waiver details if needed
+  userData.waiverName = document.getElementById('waiverName').value.trim();
+  userData.guardianName = document.getElementById('guardianName').value.trim();
+  drawFinalImage(); // Proceed to Step 5
+  showStep(5);
+}
+
+window.onload = function () {
+  const today = new Date();
+  const formattedDate = ${(today.getMonth()+1).toString().padStart(2, '0')}/${today.getDate().toString().padStart(2, '0')}/${today.getFullYear()};
+  document.getElementById('waiverDate').textContent = formattedDate;
+
+  const storedFirst = localStorage.getItem('firstName') || '';
+  const storedLast = localStorage.getItem('lastName') || '';
+  const nameField = document.getElementById('waiverName');
+  if (nameField && storedFirst && storedLast) {
+    nameField.value = ${storedFirst} ${storedLast};
+  }
+};
 
   function drawFinalImage() {
     const canvas = document.getElementById('finalCanvas');
