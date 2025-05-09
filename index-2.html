@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Life Takes Muscle</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Futura PT', 'Futura', 'Trebuchet MS', sans-serif;
+      background-color: #FDFF33;
+    }
+    .hidden { display: none; }
+    #finalCanvas { background: #FDFF33; }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <div id="app" class="w-full max-w-md space-y-8 text-center relative">
+
+    <!-- Top Right Buttons -->
+    <div class="fixed top-3 right-3 flex space-x-2 z-50">
+      <button onclick="goBack()" class="bg-black text-white border-2 border-black rounded-full px-4 py-1 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Back</button>
+      <button onclick="goHome()" class="bg-black text-white border-2 border-black rounded-full px-4 py-1 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Home</button>
+    </div>
+
+    <!-- Screen 1 -->
+    <div id="step1" class="space-y-6">
+      <h1 class="text-5xl font-black leading-tight">LIFE TAKES MUSCLE</h1>
+      <p class="text-xl font-semibold">Live at CURE SMA 2025</p>
+      <button onclick="nextStep()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold tracking-wide transition hover:scale-105 hover:bg-white hover:text-black">Get Started</button>
+    </div>
+
+    <!-- Screen 2 -->
+    <div id="step2" class="hidden space-y-4 text-left">
+      <h2 class="text-2xl font-bold text-center">Tell us a bit about yourself</h2>
+      <input id="firstName" placeholder="First Name" class="w-full border-2 border-black p-3 rounded" />
+      <input id="lastName" placeholder="Last Name" class="w-full border-2 border-black p-3 rounded" />
+      <input id="email" placeholder="Email Address" type="email" class="w-full border-2 border-black p-3 rounded" />
+      <input id="address" placeholder="Address" class="w-full border-2 border-black p-3 rounded" />
+      <input id="city" placeholder="City" class="w-full border-2 border-black p-3 rounded" />
+      <input id="state" placeholder="State" class="w-full border-2 border-black p-3 rounded" />
+      <input id="zip" placeholder="Zip" class="w-full border-2 border-black p-3 rounded" />
+      <input id="phone" placeholder="Phone" class="w-full border-2 border-black p-3 rounded" />
+      <select id="role" class="w-full border-2 border-black p-3 rounded">
+        <option disabled selected>Select the option that best describes you</option>
+        <option>Patient</option>
+        <option>Caregiver</option>
+        <option>Other</option>
+      </select>
+      <button onclick="saveUserInfo()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
+      <p class="text-xs text-center mt-2">By clicking “Submit,” you acknowledge that you have read, understand, and agree to our <a href="https://scholarrock.com/privacy-policy/" target="_blank" class="underline">Privacy Policy</a>.</p>
+    </div>
+
+    <!-- Screen 3 -->
+    <div id="step3" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold">What does <br>muscle mean for your life?</h2>
+      <select id="thing" class="w-full border-2 border-black p-3 rounded">
+        <option disabled selected>Select an option</option>
+        <option>Option 1</option>
+        <option>Option 2</option>
+        <option>Option 3</option>
+        <option>Option 4</option>
+        <option>Option 5</option>
+        <option>Option 6</option>
+        <option>Option 7</option>
+        <option>Option 8</option>
+        <option>Option 9</option>
+        <option>Option 10</option>
+      </select>
+      <button onclick="saveThing()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Submit</button>
+    </div>
+
+    <!-- Screen 4 -->
+    <div id="step4" class="hidden space-y-4">
+      <h2 class="text-2xl font-bold">Take or upload a photo</h2>
+      <input id="photo" type="file" accept="image/*" capture="environment" class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" />
+      <img id="preview" class="w-full rounded border border-black hidden aspect-square object-cover" />
+      <button onclick="savePhoto()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Upload</button>
+      <div class="text-xs text-left max-h-[300px] overflow-y-scroll border border-black p-3 rounded">
+        <p><strong>Photograph and Publicity Waiver and Release Form</strong></p>
+        <p>I, ________________________, give PRECISIONeffect, Inc. dba Precision AQ. permission to use my name, likeness, image, voice, and/or appearance in photos or videos...</p>
+        <p>I give my consent to use my name and likeness to promote PRECISIONeffect programs and/or activities.</p>
+        <br />
+        <p>___________________________________________ &nbsp; ________________</p>
+        <p>Signature &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Date</p>
+        <br />
+        <p>___________________________________________ &nbsp; ________________</p>
+        <p>Parent / Legal Guardian (if under 18) &nbsp; &nbsp; Date</p>
+      </div>
+    </div>
+
+    <!-- Screen 5 -->
+    <div id="step5" class="hidden space-y-4">
+      <h2 class="text-2xl font-bold">Here’s your final image!</h2>
+      <canvas id="finalCanvas" width="1080" height="1080" class="w-full border-2 border-black rounded"></canvas>
+      <div class="flex justify-center space-x-3 pt-2 flex-wrap">
+        <button onclick="downloadImage()" class="bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Download</button>
+        <button onclick="startOver()" class="bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Start Over</button>
+        <button onclick="shareImage()" class="bg-[#F34FE1] text-black border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white">Share</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let currentStep = 1;
+  let userData = {
+    firstName: '', lastName: '', email: '', thing: '', photo: null, photoURL: ''
+  };
+
+  function showStep(stepNum) {
+    for (let i = 1; i <= 5; i++) {
+      document.getElementById(`step${i}`).classList.add('hidden');
+    }
+    document.getElementById(`step${stepNum}`).classList.remove('hidden');
+    currentStep = stepNum;
+  }
+
+  function nextStep() { showStep(currentStep + 1); }
+  function goBack() { if (currentStep > 1) showStep(currentStep - 1); }
+  function goHome() { showStep(1); }
+
+  function saveUserInfo() {
+    userData.firstName = document.getElementById('firstName').value.trim();
+    userData.lastName = document.getElementById('lastName').value.trim();
+    userData.email = document.getElementById('email').value.trim();
+    nextStep();
+  }
+
+  function saveThing() {
+    userData.thing = document.getElementById('thing').value;
+    nextStep();
+  }
+
+  function previewPhoto() {
+    const input = document.getElementById('photo');
+    const preview = document.getElementById('preview');
+    if (input.files.length > 0) {
+      userData.photo = input.files[0];
+      userData.photoURL = URL.createObjectURL(userData.photo);
+      preview.src = userData.photoURL;
+      preview.classList.remove('hidden');
+    }
+  }
+
+  function savePhoto() {
+    if (!userData.photo) {
+      alert("Please upload or take a photo.");
+      return;
+    }
+    drawFinalImage();
+    nextStep();
+  }
+
+  function drawFinalImage() {
+    const canvas = document.getElementById('finalCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#FDFF33';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.onload = function () {
+      const photoSize = 600;
+      const spacing = 40;
+
+      const blockHeight =
+        60 + photoSize + spacing +
+        42 + spacing +
+        36 + spacing +
+        34 + spacing +
+        24;
+
+      const blockTop = (canvas.height - blockHeight) / 2;
+
+      // Draw title
+      ctx.fillStyle = '#000';
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 60px Futura PT, Futura, sans-serif';
+      ctx.fillText('LIFE TAKES MUSCLE', canvas.width / 2, blockTop);
+
+      // Draw photo
+      const size = Math.min(img.width, img.height);
+      const sx = (img.width - size) / 2;
+      const sy = (img.height - size) / 2;
+      ctx.drawImage(img, sx, sy, size, size, (canvas.width - photoSize) / 2, blockTop + 60, photoSize, photoSize);
+
+      // Draw name
+      ctx.font = 'bold 42px Futura PT, Futura, sans-serif';
+      ctx.fillText(`${userData.firstName} ${userData.lastName}`, canvas.width / 2, blockTop + 60 + photoSize + spacing);
+
+      // Draw context line
+      ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
+      ctx.fillText('Muscle means I can...', canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2);
+
+      // Draw quote
+      ctx.font = 'italic 34px Futura PT, Futura, sans-serif';
+      ctx.fillText(`"${userData.thing}"`, canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2 + 36 + spacing / 2);
+
+      // Draw website
+      ctx.font = 'bold 24px Futura PT, Futura, sans-serif';
+      ctx.fillText('LIFETAKESMUSCLE.COM', canvas.width / 2, blockTop + blockHeight - 10);
+    };
+    img.src = userData.photoURL;
+  }
+
+  function downloadImage() {
+    const canvas = document.getElementById('finalCanvas');
+    const link = document.createElement('a');
+    link.download = 'life-takes-muscle.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  function shareImage() {
+    const canvas = document.getElementById('finalCanvas');
+    canvas.toBlob(blob => {
+      const file = new File([blob], 'life-takes-muscle.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'Life Takes Muscle' });
+      } else {
+        alert('Sharing not supported on this device.');
+      }
+    });
+  }
+
+  function startOver() {
+    location.reload();
+  }
+</script>
+</body>
+</html>
