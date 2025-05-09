@@ -17,21 +17,20 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
   <div id="app" class="w-full max-w-md space-y-8 text-center relative">
-
-    <!-- Top Right Buttons -->
+    <!-- Navigation Buttons -->
     <div class="fixed top-3 right-3 flex space-x-2 z-50">
       <button onclick="goBack()" class="bg-black text-white border-2 border-black rounded-full px-4 py-1 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Back</button>
       <button onclick="goHome()" class="bg-black text-white border-2 border-black rounded-full px-4 py-1 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Home</button>
     </div>
 
-    <!-- Screen 1 -->
+    <!-- Step 1 -->
     <div id="step1" class="space-y-6">
       <h1 class="text-5xl font-black leading-tight">LIFE TAKES MUSCLE</h1>
       <p class="text-xl font-semibold">Live at CURE SMA 2025</p>
       <button onclick="nextStep()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold tracking-wide transition hover:scale-105 hover:bg-white hover:text-black">Get Started</button>
     </div>
 
-    <!-- Screen 2 -->
+    <!-- Step 2 -->
     <div id="step2" class="hidden space-y-4 text-left">
       <h2 class="text-2xl font-bold text-center">Tell us a bit about yourself</h2>
       <input id="firstName" placeholder="First Name" class="w-full border-2 border-black p-3 rounded" />
@@ -52,7 +51,7 @@
       <p class="text-xs text-center mt-2">By clicking “Submit,” you acknowledge that you have read, understand, and agree to our <a href="https://scholarrock.com/privacy-policy/" target="_blank" class="underline">Privacy Policy</a>.</p>
     </div>
 
-    <!-- Screen 3 -->
+    <!-- Step 3 -->
     <div id="step3" class="hidden space-y-6">
       <h2 class="text-2xl font-bold">What does <br>muscle mean for your life?</h2>
       <select id="thing" class="w-full border-2 border-black p-3 rounded">
@@ -71,26 +70,53 @@
       <button onclick="saveThing()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Submit</button>
     </div>
 
-    <!-- Screen 4 -->
-    <div id="step4" class="hidden space-y-4">
+    <!-- Step 4 -->
+    <div id="step4" class="hidden space-y-6">
       <h2 class="text-2xl font-bold">Take or upload a photo</h2>
-      <input id="photo" type="file" accept="image/*" capture="environment" class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" />
-      <img id="preview" class="w-full rounded border border-black hidden aspect-square object-cover" />
-      <button onclick="savePhoto()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Upload</button>
-      <div class="text-xs text-left max-h-[300px] overflow-y-scroll border border-black p-3 rounded">
-        <p><strong>Photograph and Publicity Waiver and Release Form</strong></p>
-        <p>I, ________________________, give PRECISIONeffect, Inc. dba Precision AQ. permission to use my name, likeness, image, voice, and/or appearance in photos or videos...</p>
-        <p>I give my consent to use my name and likeness to promote PRECISIONeffect programs and/or activities.</p>
-        <br />
-        <p>___________________________________________ &nbsp; ________________</p>
-        <p>Signature &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Date</p>
-        <br />
-        <p>___________________________________________ &nbsp; ________________</p>
-        <p>Parent / Legal Guardian (if under 18) &nbsp; &nbsp; Date</p>
-      </div>
-    </div>
 
-    <!-- Screen 5 -->
+      <input id="photo" type="file" accept="image/*" capture="environment"
+             class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" />
+      <img id="preview" class="w-full rounded border border-black hidden aspect-square object-cover" />
+
+      <div class="space-y-4 text-left text-sm leading-relaxed">
+        <h3 class="text-base font-bold">Photograph and Publicity Waiver and Release Form</h3>
+
+        <p>
+          I, <input id="waiverName" class="border-b-2 border-black bg-transparent w-auto px-1 mx-1 font-semibold" />
+          give PRECISIONeffect, Inc. dba Precision AQ (“Precision”) permission to use my name, likeness,
+          image, voice, and/or appearance in any media taken on behalf of Precision or its client Scholar Rock, Inc.,
+          without compensation to me.
+        </p>
+
+        <p>
+          I agree that Precision owns these materials and may use them for purposes consistent with its mission,
+          including exhibitions, advertisements, publications, and digital content. I understand that I may be
+          identified by name and waive any rights to approve or receive payment.
+        </p>
+
+        <p>
+          This release is binding on me and my heirs, assigns, and personal representatives.
+        </p>
+
+        <p><strong>Today's Date:</strong> <span id="waiverDate" class="ml-2 font-semibold"></span></p>
+
+        <label class="block mt-2 font-medium">
+          Parent / Legal Guardian (if under 18):
+          <input id="guardianName" class="w-full border-b-2 border-black bg-transparent mt-1 p-1" placeholder="Enter name if applicable" />
+        </label>
+
+        <label class="flex items-start gap-2 mt-2">
+          <input type="checkbox" id="waiverAgree" class="mt-1" />
+          <span class="text-sm">I agree to the above terms and give my consent.</span>
+        </label>
+      </div>
+
+      <button onclick="savePhoto()"
+              class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">
+        Upload
+      </button>
+    </div>
+    <!-- Step 5 -->
     <div id="step5" class="hidden space-y-4">
       <h2 class="text-2xl font-bold">Here’s your final image!</h2>
       <canvas id="finalCanvas" width="1080" height="1080" class="w-full border-2 border-black rounded"></canvas>
@@ -102,130 +128,147 @@
     </div>
   </div>
 
-<script>
-  let currentStep = 1;
-  let userData = {
-    firstName: '', lastName: '', email: '', thing: '', photo: null, photoURL: ''
-  };
-
-  function showStep(stepNum) {
-    for (let i = 1; i <= 5; i++) {
-      document.getElementById(`step${i}`).classList.add('hidden');
-    }
-    document.getElementById(`step${stepNum}`).classList.remove('hidden');
-    currentStep = stepNum;
-  }
-
-  function nextStep() { showStep(currentStep + 1); }
-  function goBack() { if (currentStep > 1) showStep(currentStep - 1); }
-  function goHome() { showStep(1); }
-
-  function saveUserInfo() {
-    userData.firstName = document.getElementById('firstName').value.trim();
-    userData.lastName = document.getElementById('lastName').value.trim();
-    userData.email = document.getElementById('email').value.trim();
-    nextStep();
-  }
-
-  function saveThing() {
-    userData.thing = document.getElementById('thing').value;
-    nextStep();
-  }
-
-  function previewPhoto() {
-    const input = document.getElementById('photo');
-    const preview = document.getElementById('preview');
-    if (input.files.length > 0) {
-      userData.photo = input.files[0];
-      userData.photoURL = URL.createObjectURL(userData.photo);
-      preview.src = userData.photoURL;
-      preview.classList.remove('hidden');
-    }
-  }
-
-  function savePhoto() {
-    if (!userData.photo) {
-      alert("Please upload or take a photo.");
-      return;
-    }
-    drawFinalImage();
-    nextStep();
-  }
-
-  function drawFinalImage() {
-    const canvas = document.getElementById('finalCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#FDFF33';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const img = new Image();
-    img.onload = function () {
-      const photoSize = 600;
-      const spacing = 40;
-
-      const blockHeight =
-        60 + photoSize + spacing +
-        42 + spacing +
-        36 + spacing +
-        34 + spacing +
-        24;
-
-      const blockTop = (canvas.height - blockHeight) / 2;
-
-      // Draw title
-      ctx.fillStyle = '#000';
-      ctx.textAlign = 'center';
-      ctx.font = 'bold 60px Futura PT, Futura, sans-serif';
-      ctx.fillText('LIFE TAKES MUSCLE', canvas.width / 2, blockTop);
-
-      // Draw photo
-      const size = Math.min(img.width, img.height);
-      const sx = (img.width - size) / 2;
-      const sy = (img.height - size) / 2;
-      ctx.drawImage(img, sx, sy, size, size, (canvas.width - photoSize) / 2, blockTop + 60, photoSize, photoSize);
-
-      // Draw name
-      ctx.font = 'bold 42px Futura PT, Futura, sans-serif';
-      ctx.fillText(`${userData.firstName} ${userData.lastName}`, canvas.width / 2, blockTop + 60 + photoSize + spacing);
-
-      // Draw context line
-      ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
-      ctx.fillText('Muscle means I can...', canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2);
-
-      // Draw quote
-      ctx.font = 'italic 34px Futura PT, Futura, sans-serif';
-      ctx.fillText(`"${userData.thing}"`, canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2 + 36 + spacing / 2);
-
-      // Draw website
-      ctx.font = 'bold 24px Futura PT, Futura, sans-serif';
-      ctx.fillText('LIFETAKESMUSCLE.COM', canvas.width / 2, blockTop + blockHeight - 10);
+  <!-- JavaScript -->
+  <script>
+    let currentStep = 1;
+    let userData = {
+      firstName: '', lastName: '', email: '', thing: '', photo: null, photoURL: '',
+      waiverName: '', guardianName: ''
     };
-    img.src = userData.photoURL;
-  }
 
-  function downloadImage() {
-    const canvas = document.getElementById('finalCanvas');
-    const link = document.createElement('a');
-    link.download = 'life-takes-muscle.png';
-    link.href = canvas.toDataURL();
-    link.click();
-  }
-
-  function shareImage() {
-    const canvas = document.getElementById('finalCanvas');
-    canvas.toBlob(blob => {
-      const file = new File([blob], 'life-takes-muscle.png', { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file], title: 'Life Takes Muscle' });
-      } else {
-        alert('Sharing not supported on this device.');
+    function showStep(stepNum) {
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`step${i}`).classList.add('hidden');
       }
-    });
-  }
+      document.getElementById(`step${stepNum}`).classList.remove('hidden');
+      currentStep = stepNum;
+    }
 
-  function startOver() {
-    location.reload();
-  }
-</script>
+    function nextStep() { showStep(currentStep + 1); }
+    function goBack() { if (currentStep > 1) showStep(currentStep - 1); }
+    function goHome() { showStep(1); }
+
+    function saveUserInfo() {
+      userData.firstName = document.getElementById('firstName').value.trim();
+      userData.lastName = document.getElementById('lastName').value.trim();
+      userData.email = document.getElementById('email').value.trim();
+      localStorage.setItem('firstName', userData.firstName);
+      localStorage.setItem('lastName', userData.lastName);
+      nextStep();
+    }
+
+    function saveThing() {
+      userData.thing = document.getElementById('thing').value;
+      nextStep();
+    }
+
+    function previewPhoto() {
+      const input = document.getElementById('photo');
+      const preview = document.getElementById('preview');
+      if (input.files.length > 0) {
+        userData.photo = input.files[0];
+        userData.photoURL = URL.createObjectURL(userData.photo);
+        preview.src = userData.photoURL;
+        preview.classList.remove('hidden');
+      }
+    }
+
+    function savePhoto() {
+      const agreed = document.getElementById('waiverAgree').checked;
+      if (!agreed) {
+        alert("You must agree to the photo release terms to continue.");
+        return;
+      }
+      userData.waiverName = document.getElementById('waiverName').value.trim();
+      userData.guardianName = document.getElementById('guardianName').value.trim();
+      drawFinalImage();
+      showStep(5);
+    }
+
+    function drawFinalImage() {
+      const canvas = document.getElementById('finalCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FDFF33';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const img = new Image();
+      img.onload = function () {
+        const photoSize = 600;
+        const spacing = 40;
+
+        const blockHeight =
+          60 + photoSize + spacing +
+          42 + spacing +
+          36 + spacing +
+          34 + spacing +
+          24;
+
+        const blockTop = (canvas.height - blockHeight) / 2;
+
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+
+        ctx.font = 'bold 60px Futura PT, Futura, sans-serif';
+        ctx.fillText('LIFE TAKES MUSCLE', canvas.width / 2, blockTop);
+
+        const size = Math.min(img.width, img.height);
+        const sx = (img.width - size) / 2;
+        const sy = (img.height - size) / 2;
+        ctx.drawImage(img, sx, sy, size, size, (canvas.width - photoSize) / 2, blockTop + 60, photoSize, photoSize);
+
+        ctx.font = 'bold 42px Futura PT, Futura, sans-serif';
+        ctx.fillText(`${userData.firstName} ${userData.lastName}`, canvas.width / 2, blockTop + 60 + photoSize + spacing);
+
+        ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
+        ctx.fillText('Muscle means I can...', canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2);
+
+        ctx.font = 'italic 34px Futura PT, Futura, sans-serif';
+        ctx.fillText(`"${userData.thing}"`, canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2 + 36 + spacing / 2);
+
+        ctx.font = 'bold 24px Futura PT, Futura, sans-serif';
+        ctx.fillText('LIFETAKESMUSCLE.COM', canvas.width / 2, blockTop + blockHeight - 10);
+      };
+      img.src = userData.photoURL;
+    }
+
+    function downloadImage() {
+      const canvas = document.getElementById('finalCanvas');
+      const link = document.createElement('a');
+      link.download = 'life-takes-muscle.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    function shareImage() {
+      const canvas = document.getElementById('finalCanvas');
+      canvas.toBlob(blob => {
+        const file = new File([blob], 'life-takes-muscle.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'Life Takes Muscle' });
+        } else {
+          alert('Sharing not supported on this device.');
+        }
+      });
+    }
+
+    function startOver() {
+      location.reload();
+    }
+
+    window.onload = function () {
+      const today = new Date();
+      const formattedDate = `${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getDate().toString().padStart(2, '0')}/${today.getFullYear()}`;
+      document.getElementById('waiverDate').textContent = formattedDate;
+
+      const storedFirst = localStorage.getItem('firstName') || '';
+      const storedLast = localStorage.getItem('lastName') || '';
+      if (storedFirst && storedLast) {
+        const waiverField = document.getElementById('waiverName');
+        if (waiverField) {
+          waiverField.value = `${storedFirst} ${storedLast}`;
+        }
+      }
+    };
+  </script>
 </body>
 </html>
