@@ -13,262 +13,261 @@
     }
     .hidden { display: none; }
     #finalCanvas { background: #FDFF33; }
+    summary::-webkit-details-marker { display: none; }
   </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
   <div id="app" class="w-full max-w-md space-y-8 text-center relative">
-    <!-- Navigation Buttons -->
+
+    <!-- Global Nav -->
     <div class="fixed top-3 right-3 flex space-x-2 z-50">
       <button onclick="goBack()" class="bg-black text-white border-2 border-black rounded-full px-4 py-1 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Back</button>
-      <button onclick="goHome()" class="bg-black text-white border-2 border-black rounded-full px-4 py-1 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Home</button>
+      <button onclick="startOver()" class="bg-black text-white border-2 border-black rounded-full px-4 py-1 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Home</button>
     </div>
 
-    <!-- Step 1 -->
+    <!-- Screen 1: Welcome -->
     <div id="step1" class="space-y-6">
       <h1 class="text-5xl font-black leading-tight">LIFE TAKES MUSCLE</h1>
       <p class="text-xl font-semibold">Live at CURE SMA 2025</p>
-      <button onclick="nextStep()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold tracking-wide transition hover:scale-105 hover:bg-white hover:text-black">Get Started</button>
+      <button onclick="nextStep()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Get Started</button>
     </div>
 
-    <!-- Step 2 -->
-    <div id="step2" class="hidden space-y-4 text-left">
-      <h2 class="text-2xl font-bold text-center">Tell us a bit about yourself</h2>
+    <!-- Screen 2: Form + Response -->
+    <div id="step2" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold">Tell us a bit about yourself</h2>
+
       <input id="firstName" placeholder="First Name" class="w-full border-2 border-black p-3 rounded" />
       <input id="lastName" placeholder="Last Name" class="w-full border-2 border-black p-3 rounded" />
-      <input id="email" placeholder="Email Address" type="email" class="w-full border-2 border-black p-3 rounded" />
-      <input id="address" placeholder="Address" class="w-full border-2 border-black p-3 rounded" />
-      <input id="city" placeholder="City" class="w-full border-2 border-black p-3 rounded" />
-      <input id="state" placeholder="State" class="w-full border-2 border-black p-3 rounded" />
-      <input id="zip" placeholder="Zip" class="w-full border-2 border-black p-3 rounded" />
-      <input id="phone" placeholder="Phone" class="w-full border-2 border-black p-3 rounded" />
-      <select id="role" class="w-full border-2 border-black p-3 rounded">
-        <option disabled selected>Select the option that best describes you</option>
-        <option>Patient</option>
-        <option>Caregiver</option>
-        <option>Other</option>
-      </select>
-      <button onclick="saveUserInfo()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
-      <p class="text-xs text-center mt-2">By clicking “Submit,” you acknowledge that you have read, understand, and agree to our <a href="https://scholarrock.com/privacy-policy/" target="_blank" class="underline">Privacy Policy</a>.</p>
+      <input id="age" placeholder="Age" type="number" class="w-full border-2 border-black p-3 rounded" />
+
+      <label class="text-left block">
+        <p class="text-xl font-semibold mb-2 leading-tight">Finish the sentence:<br /><span class="italic">Muscle means I can…</span></p>
+        <textarea id="muscleText" rows="4" class="w-full border-2 border-black p-3 rounded resize-none"></textarea>
+      </label>
+
+      <button onclick="saveStep2()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
     </div>
 
-    <!-- Step 3 -->
-    <div id="step3" class="hidden space-y-6">
-      <h2 class="text-2xl font-bold">What does <br>muscle mean for your life?</h2>
-      <select id="thing" class="w-full border-2 border-black p-3 rounded">
-        <option disabled selected>Select an option</option>
-        <option>Option 1</option>
-        <option>Option 2</option>
-        <option>Option 3</option>
-        <option>Option 4</option>
-        <option>Option 5</option>
-        <option>Option 6</option>
-        <option>Option 7</option>
-        <option>Option 8</option>
-        <option>Option 9</option>
-        <option>Option 10</option>
-      </select>
-      <button onclick="saveThing()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Submit</button>
-    </div>
-
-    <!-- Step 4 -->
-    <div id="step4" class="hidden space-y-6">
-      <h2 class="text-2xl font-bold">Take or upload a photo</h2>
+    <!-- Screen 3: Photo Upload + Consent -->
+    <div id="step3" class="hidden space-y-6 text-left">
+      <h2 class="text-2xl font-bold text-center">Take a Photo</h2>
+      <p class="text-sm text-center">Select “Choose File” to take and upload the photo</p>
 
       <input id="photo" type="file" accept="image/*" capture="environment"
              class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" />
       <img id="preview" class="w-full rounded border border-black hidden aspect-square object-cover" />
 
-      <div class="space-y-4 text-left text-sm leading-relaxed">
-        <h3 class="text-base font-bold">Photograph and Publicity Waiver and Release Form</h3>
+      <!-- Consent & Release Accordion -->
+      <details id="consentAccordion" class="border border-black p-4 rounded bg-yellow-100">
+        <summary class="font-bold cursor-pointer select-none">Consent & Release (Click to Expand)</summary>
+        <div class="mt-4 space-y-3 text-sm leading-relaxed">
+          <p>I hereby grant Scholar Rock, Inc. and its affiliates and its and their respective employees, agents, licensees, successors and assigns (“Scholar Rock”) the right and license: (a) to take or record photographs and/or audio, video and/or audio visual recordings of me on or in any media or format now known or hereafter developed (“New Media”); (b) to copy, distribute, display, modify and otherwise use any other photographs or audio, video or audio visual recordings that I provide to Scholar Rock (“Provided Media”, and together with New Media, “Media”); and (c) to use my name, sobriquets, image, voice, likeness, quotes, signature and/or biographical material (“NIL”) in connection with, including as incorporated in, the Media, in each case, for any lawful purpose. Such uses may include, without limitation, Scholar Rock’s disease education initiatives, corporate or investor relations materials and publications, internal training, and marketing purposes. These uses may be in any form or medium, including, without limitation, print and broadcast media, social media, and other online channels.</p>
 
-        <p>
-          I, <input id="waiverName" class="border-b-2 border-black bg-transparent w-auto px-1 mx-1 font-semibold" />
-          give PRECISIONeffect, Inc. dba Precision AQ (“Precision”) permission to use my name, likeness,
-          image, voice, and/or appearance in any media taken on behalf of Precision or its client Scholar Rock, Inc.,
-          without compensation to me.
-        </p>
+          <p>I acknowledge that I may not be provided the opportunity to, and waive any right to, inspect or approve the Media and any uses of the Media or NIL as contemplated herein prior to use by Scholar Rock. I understand that Scholar Rock’s use of the Media as indicated above may reveal that I have a particular disease, participated in a particular clinical trial, or take a particular investigational product developed by Scholar Rock.</p>
 
-        <p>
-          I agree that Precision owns these materials and may use them for purposes consistent with its mission,
-          including exhibitions, advertisements, publications, and digital content. I understand that I may be
-          identified by name and waive any rights to approve or receive payment.
-        </p>
+          <p>I understand and agree I have no right, title, or interest in or to the New Media, which is exclusively owned by Scholar Rock. I authorize Scholar Rock to copyright the New Media. Additionally, I waive any right to receive any payment or other compensation, now or in the future, arising from or related to any use of the Media or NIL as contemplated herein. I further acknowledge that Scholar Rock is under no obligation to use the Media.</p>
 
-        <p>
-          This release is binding on me and my heirs, assigns, and personal representatives.
-        </p>
+          <p>I acknowledge that I may choose to have an attorney review this Consent and Release before deciding whether to sign it. Further, I hereby release, discharge, and agree to hold Scholar Rock harmless from and against any claims, actions, demands, liability (including, without limitation, any liability based on rights of publicity, invasion of privacy and other civil rights, copyright infringement, defamation, libel and slander) arising out of or in connection with the Media and/or NIL.</p>
 
-        <p><strong>Today's Date:</strong> <span id="waiverDate" class="ml-2 font-semibold"></span></p>
+          <div class="pt-4 space-y-2">
+            <label>Printed Name:
+              <input id="consentName" class="w-full border border-black rounded p-1 mt-1" />
+            </label>
+            <label>Date:
+              <input id="consentDate" class="w-full border border-black rounded p-1 mt-1" disabled />
+            </label>
 
-        <label class="block mt-2 font-medium">
-          Parent / Legal Guardian (if under 18):
-          <input id="guardianName" class="w-full border-b-2 border-black bg-transparent mt-1 p-1" placeholder="Enter name if applicable" />
-        </label>
+            <div id="guardianFields" class="hidden">
+              <label>Parent/Guardian Printed Name:
+                <input id="guardianName" class="w-full border border-black rounded p-1 mt-1" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </details>
 
-        <label class="flex items-start gap-2 mt-2">
-          <input type="checkbox" id="waiverAgree" class="mt-1" />
-          <span class="text-sm">I agree to the above terms and give my consent.</span>
-        </label>
+      <label class="flex items-start gap-2 mt-2 text-sm">
+        <input type="checkbox" id="consentAgree" class="mt-1" />
+        <span>I acknowledge and agree to the Consent & Release above.</span>
+      </label>
+
+      <div class="flex justify-between">
+        <button onclick="confirmConsent(true)" class="text-sm underline text-red-600">I do not agree</button>
+        <button onclick="handleConsent()" class="bg-black text-white border-2 border-black rounded-full px-6 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
       </div>
-
-      <button onclick="savePhoto()"
-              class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">
-        Upload
-      </button>
     </div>
-    <!-- Step 5 -->
-    <div id="step5" class="hidden space-y-4">
-      <h2 class="text-2xl font-bold">Here’s your final image!</h2>
+
+    <!-- Screen 4: Final Image -->
+    <div id="step4" class="hidden space-y-4">
+      <h2 class="text-2xl font-bold">Your Submission</h2>
       <canvas id="finalCanvas" width="1080" height="1080" class="w-full border-2 border-black rounded"></canvas>
-      <div class="flex justify-center space-x-3 pt-2 flex-wrap">
-        <button onclick="downloadImage()" class="bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Download</button>
-        <button onclick="startOver()" class="bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Start Over</button>
+      <div class="flex justify-center space-x-3 pt-2">
         <button onclick="shareImage()" class="bg-[#F34FE1] text-black border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white">Share</button>
+        <button onclick="nextStep()" class="bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
+      </div>
+    </div>
+
+    <!-- Screen 5: CRM Form -->
+    <div id="step5" class="hidden space-y-6 text-left">
+      <h2 class="text-2xl font-bold text-center">Stay Connected</h2>
+      <input id="crmFirst" class="w-full border-2 border-black p-3 rounded" placeholder="First Name (required)" required />
+      <input id="crmLast" class="w-full border-2 border-black p-3 rounded" placeholder="Last Name (required)" required />
+      <input id="crmEmail" class="w-full border-2 border-black p-3 rounded" placeholder="Email Address (required)" required />
+      <input id="crmAddress" class="w-full border-2 border-black p-3 rounded" placeholder="Address" />
+      <input id="crmCity" class="w-full border-2 border-black p-3 rounded" placeholder="City" />
+      <input id="crmState" class="w-full border-2 border-black p-3 rounded" placeholder="State" />
+      <input id="crmZip" class="w-full border-2 border-black p-3 rounded" placeholder="Zip Code" />
+      <input id="crmPhone" class="w-full border-2 border-black p-3 rounded" placeholder="Phone Number" />
+      <select id="crmRole" class="w-full border-2 border-black p-3 rounded" required>
+        <option disabled selected>Which best describes you? (required)</option>
+        <option>Patient</option>
+        <option>Caregiver</option>
+        <option>Other</option>
+      </select>
+      <p class="text-xs text-center mt-2">By clicking “Submit,” you acknowledge that you have read, understand, and agree to our <a href="https://scholarrock.com/privacy-policy/" target="_blank" class="underline">Privacy Policy</a>.</p>
+      <button onclick="submitForm()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
+    </div>
+
+    <!-- Thank You Modal -->
+    <div id="thankYouModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+      <div class="bg-white rounded-xl p-6 max-w-sm text-center space-y-4">
+        <h2 class="text-2xl font-bold">Thank you!</h2>
+        <p class="text-sm">We appreciate your submission.</p>
+        <button onclick="startOver()" class="bg-black text-white border-2 border-black rounded-full px-6 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Start Over</button>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript -->
-  <script>
-    let currentStep = 1;
-    let userData = {
-      firstName: '', lastName: '', email: '', thing: '', photo: null, photoURL: '',
-      waiverName: '', guardianName: ''
-    };
+<script>
+let currentStep = 1;
+let userData = { firstName: '', lastName: '', age: '', response: '', photo: null, photoURL: '' };
 
-    function showStep(stepNum) {
-      for (let i = 1; i <= 5; i++) {
-        document.getElementById(`step${i}`).classList.add('hidden');
-      }
-      document.getElementById(`step${stepNum}`).classList.remove('hidden');
-      currentStep = stepNum;
+function showStep(step) {
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById(`step${i}`).classList.add('hidden');
+  }
+  document.getElementById(`step${step}`).classList.remove('hidden');
+  currentStep = step;
+}
+
+function nextStep() {
+  const next = currentStep + 1;
+
+  // If going to Screen 5, populate CRM fields
+  if (next === 5) {
+    document.getElementById('crmFirst').value = userData.firstName;
+    document.getElementById('crmLast').value = userData.lastName;
+  }
+
+  showStep(next);
+}
+
+function goBack() { if (currentStep > 1) showStep(currentStep - 1); }
+function startOver() { location.reload(); }
+
+function saveStep2() {
+  userData.firstName = document.getElementById('firstName').value.trim();
+  userData.lastName = document.getElementById('lastName').value.trim();
+  userData.age = parseInt(document.getElementById('age').value);
+  userData.response = document.getElementById('muscleText').value.trim();
+
+  document.getElementById('consentName').value = `${userData.firstName} ${userData.lastName}`;
+  document.getElementById('consentDate').value = new Date().toLocaleDateString('en-US');
+
+  if (userData.age < 18) {
+    document.getElementById('consentAccordion').open = true;
+    document.getElementById('guardianFields').classList.remove('hidden');
+  }
+
+  nextStep();
+}
+
+function previewPhoto() {
+  const input = document.getElementById('photo');
+  const preview = document.getElementById('preview');
+  if (input.files.length > 0) {
+    userData.photo = input.files[0];
+    userData.photoURL = URL.createObjectURL(userData.photo);
+    preview.src = userData.photoURL;
+    preview.classList.remove('hidden');
+  }
+}
+
+function confirmConsent() {
+  const confirmExit = confirm("If you do not agree, you’ll be sent back to the start and cannot participate.");
+  if (confirmExit) startOver();
+}
+
+function handleConsent() {
+  if (!document.getElementById('consentAgree').checked) {
+    alert("You must agree to the Consent & Release to continue.");
+    return;
+  }
+  drawFinalImage();
+  nextStep();
+}
+
+function drawFinalImage() {
+  const canvas = document.getElementById('finalCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FDFF33';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const img = new Image();
+  img.onload = function () {
+    const spacing = 40;
+    const top = 60;
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 60px Futura PT, Futura, sans-serif';
+    ctx.fillText('LIFE TAKES MUSCLE', canvas.width / 2, top);
+
+    ctx.drawImage(img, 240, top + spacing, 600, 600);
+
+    ctx.font = 'bold 42px Futura PT, Futura, sans-serif';
+    ctx.fillText(`${userData.firstName} ${userData.lastName[0]}.`, canvas.width / 2, top + 720);
+
+    ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
+    ctx.fillText(`Age ${userData.age}`, canvas.width / 2, top + 770);
+
+    ctx.font = 'italic 28px Futura PT, Futura, sans-serif';
+    ctx.fillText("Muscle means I can…", canvas.width / 2, top + 820);
+
+    ctx.font = 'italic 34px Futura PT, Futura, sans-serif';
+    ctx.fillText(`"${userData.response}"`, canvas.width / 2, top + 870);
+
+    ctx.font = 'bold 24px Futura PT, Futura, sans-serif';
+    ctx.fillText('LIFETAKESMUSCLE.COM', canvas.width / 2, 1040);
+  };
+  img.src = userData.photoURL;
+}
+
+function shareImage() {
+  const canvas = document.getElementById('finalCanvas');
+  canvas.toBlob(blob => {
+    const file = new File([blob], 'life-takes-muscle.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'Life Takes Muscle' });
+    } else {
+      alert('Sharing not supported on this device.');
     }
+  });
+}
 
-    function nextStep() { showStep(currentStep + 1); }
-    function goBack() { if (currentStep > 1) showStep(currentStep - 1); }
-    function goHome() { showStep(1); }
+function submitForm() {
+  const first = document.getElementById('crmFirst').value.trim();
+  const last = document.getElementById('crmLast').value.trim();
+  const email = document.getElementById('crmEmail').value.trim();
+  const role = document.getElementById('crmRole').value;
 
-    function saveUserInfo() {
-      userData.firstName = document.getElementById('firstName').value.trim();
-      userData.lastName = document.getElementById('lastName').value.trim();
-      userData.email = document.getElementById('email').value.trim();
-      localStorage.setItem('firstName', userData.firstName);
-      localStorage.setItem('lastName', userData.lastName);
-      nextStep();
-    }
+  if (!first || !last || !email || role === "Select the option that best describes you") {
+    alert("Please complete all required fields.");
+    return;
+  }
 
-    function saveThing() {
-      userData.thing = document.getElementById('thing').value;
-      nextStep();
-    }
-
-    function previewPhoto() {
-      const input = document.getElementById('photo');
-      const preview = document.getElementById('preview');
-      if (input.files.length > 0) {
-        userData.photo = input.files[0];
-        userData.photoURL = URL.createObjectURL(userData.photo);
-        preview.src = userData.photoURL;
-        preview.classList.remove('hidden');
-      }
-    }
-
-    function savePhoto() {
-      const agreed = document.getElementById('waiverAgree').checked;
-      if (!agreed) {
-        alert("You must agree to the photo release terms to continue.");
-        return;
-      }
-      userData.waiverName = document.getElementById('waiverName').value.trim();
-      userData.guardianName = document.getElementById('guardianName').value.trim();
-      drawFinalImage();
-      showStep(5);
-    }
-
-    function drawFinalImage() {
-      const canvas = document.getElementById('finalCanvas');
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#FDFF33';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const img = new Image();
-      img.onload = function () {
-        const photoSize = 600;
-        const spacing = 40;
-
-        const blockHeight =
-          60 + photoSize + spacing +
-          42 + spacing +
-          36 + spacing +
-          34 + spacing +
-          24;
-
-        const blockTop = (canvas.height - blockHeight) / 2;
-
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-
-        ctx.font = 'bold 60px Futura PT, Futura, sans-serif';
-        ctx.fillText('LIFE TAKES MUSCLE', canvas.width / 2, blockTop);
-
-        const size = Math.min(img.width, img.height);
-        const sx = (img.width - size) / 2;
-        const sy = (img.height - size) / 2;
-        ctx.drawImage(img, sx, sy, size, size, (canvas.width - photoSize) / 2, blockTop + 60, photoSize, photoSize);
-
-        ctx.font = 'bold 42px Futura PT, Futura, sans-serif';
-        ctx.fillText(`${userData.firstName} ${userData.lastName}`, canvas.width / 2, blockTop + 60 + photoSize + spacing);
-
-        ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
-        ctx.fillText('Muscle means I can...', canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2);
-
-        ctx.font = 'italic 34px Futura PT, Futura, sans-serif';
-        ctx.fillText(`"${userData.thing}"`, canvas.width / 2, blockTop + 60 + photoSize + spacing + 42 + spacing / 2 + 36 + spacing / 2);
-
-        ctx.font = 'bold 24px Futura PT, Futura, sans-serif';
-        ctx.fillText('LIFETAKESMUSCLE.COM', canvas.width / 2, blockTop + blockHeight - 10);
-      };
-      img.src = userData.photoURL;
-    }
-
-    function downloadImage() {
-      const canvas = document.getElementById('finalCanvas');
-      const link = document.createElement('a');
-      link.download = 'life-takes-muscle.png';
-      link.href = canvas.toDataURL();
-      link.click();
-    }
-
-    function shareImage() {
-      const canvas = document.getElementById('finalCanvas');
-      canvas.toBlob(blob => {
-        const file = new File([blob], 'life-takes-muscle.png', { type: 'image/png' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          navigator.share({ files: [file], title: 'Life Takes Muscle' });
-        } else {
-          alert('Sharing not supported on this device.');
-        }
-      });
-    }
-
-    function startOver() {
-      location.reload();
-    }
-
-    window.onload = function () {
-      const today = new Date();
-      const formattedDate = `${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getDate().toString().padStart(2, '0')}/${today.getFullYear()}`;
-      document.getElementById('waiverDate').textContent = formattedDate;
-
-      const storedFirst = localStorage.getItem('firstName') || '';
-      const storedLast = localStorage.getItem('lastName') || '';
-      if (storedFirst && storedLast) {
-        const waiverField = document.getElementById('waiverName');
-        if (waiverField) {
-          waiverField.value = `${storedFirst} ${storedLast}`;
-        }
-      }
-    };
-  </script>
+  document.getElementById('thankYouModal').classList.remove('hidden');
+}
+</script>
 </body>
 </html>
