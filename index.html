@@ -7,17 +7,48 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    h1, h2, h3, button, .font-bold {
+      font-family: 'Futura PT Bold', 'Futura Bold', 'Futura', 'Trebuchet MS', sans-serif;
+      font-weight: bold;
+    }
+    
     body {
-      font-family: 'Futura PT', 'Futura', 'Trebuchet MS', sans-serif;
+      font-family: 'Miller Text', Arial, sans-serif;
       background-color: #FDFF33;
     }
+    
     .hidden { display: none; }
     #finalCanvas { background: #FDFF33; }
     summary::-webkit-details-marker { display: none; }
+    
+    .progress-container {
+      width: 100%;
+      background-color: #fff;
+      border: 2px solid #000;
+      border-radius: 9999px;
+      height: 12px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: #000;
+      transition: width 0.5s ease-in-out;
+    }
+    
+    .required::after {
+      content: " *";
+      color: red;
+    }
   </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
-  <div id="app" class="w-full max-w-md space-y-8 text-center relative">
+  <div id="app" class="w-full max-w-md space-y-6 text-center relative">
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div id="progressBar" class="progress-bar" style="width: 20%"></div>
+    </div>
 
     <!-- Global Nav -->
     <div class="fixed top-3 right-3 flex space-x-2 z-50">
@@ -33,37 +64,63 @@
     </div>
 
     <!-- Screen 2: Form + Response -->
-    <div id="step2" class="hidden space-y-6">
+    <div id="step2" class="hidden space-y-4">
       <h2 class="text-2xl font-bold">Tell us a bit about yourself</h2>
 
-      <input id="firstName" placeholder="First Name" class="w-full border-2 border-black p-3 rounded" />
-      <input id="lastName" placeholder="Last Name" class="w-full border-2 border-black p-3 rounded" />
-      <input id="age" placeholder="Age" type="number" class="w-full border-2 border-black p-3 rounded" />
+      <div class="text-left">
+        <label class="block mb-1 required">First Name</label>
+        <input id="firstName" placeholder="First Name" class="w-full border-2 border-black p-3 rounded" required />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1 required">Last Name</label>
+        <input id="lastName" placeholder="Last Name" class="w-full border-2 border-black p-3 rounded" required />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1 required">Age</label>
+        <input id="age" placeholder="Age" type="number" class="w-full border-2 border-black p-3 rounded" required />
+      </div>
+      
+      <div class="flex items-center justify-between border-2 border-black p-3 rounded bg-white">
+        <span class="font-semibold">Display my age on final image</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="displayAge" class="sr-only peer" checked>
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+        </label>
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1 required">Email Address</label>
+        <input id="email" placeholder="Email Address" type="email" class="w-full border-2 border-black p-3 rounded" required />
+      </div>
 
       <label class="text-left block">
-        <p class="text-xl font-semibold mb-2 leading-tight">Finish the sentence:<br /><span class="italic">Muscle means I can…</span></p>
-        <textarea id="muscleText" rows="4" class="w-full border-2 border-black p-3 rounded resize-none"></textarea>
+        <p class="text-xl font-semibold mb-2 leading-tight required">Finish the sentence:<br /><span class="italic">Muscle means I can…</span></p>
+        <textarea id="muscleText" rows="4" class="w-full border-2 border-black p-3 rounded resize-none" required></textarea>
       </label>
+      
+      <p class="text-sm text-left text-gray-600">* Required fields</p>
 
-      <button onclick="saveStep2()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
+      <button onclick="validateStep2()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
     </div>
 
     <!-- Screen 3: Photo Upload + Consent -->
     <div id="step3" class="hidden space-y-6 text-left">
       <h2 class="text-2xl font-bold text-center">Take a Photo</h2>
-      <p class="text-sm text-center">Select “Choose File” to take and upload the photo</p>
+      <p class="text-sm text-center">Select "Choose File" to take and upload the photo</p>
 
       <input id="photo" type="file" accept="image/*" capture="environment"
-             class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" />
+             class="w-full border-2 border-black p-3 rounded" onchange="previewPhoto()" required />
       <img id="preview" class="w-full rounded border border-black hidden aspect-square object-cover" />
 
       <!-- Consent & Release Accordion -->
       <details id="consentAccordion" class="border border-black p-4 rounded bg-yellow-100">
         <summary class="font-bold cursor-pointer select-none">Consent & Release (Click to Expand)</summary>
         <div class="mt-4 space-y-3 text-sm leading-relaxed">
-          <p>I hereby grant Scholar Rock, Inc. and its affiliates and its and their respective employees, agents, licensees, successors and assigns (“Scholar Rock”) the right and license: (a) to take or record photographs and/or audio, video and/or audio visual recordings of me on or in any media or format now known or hereafter developed (“New Media”); (b) to copy, distribute, display, modify and otherwise use any other photographs or audio, video or audio visual recordings that I provide to Scholar Rock (“Provided Media”, and together with New Media, “Media”); and (c) to use my name, sobriquets, image, voice, likeness, quotes, signature and/or biographical material (“NIL”) in connection with, including as incorporated in, the Media, in each case, for any lawful purpose. Such uses may include, without limitation, Scholar Rock’s disease education initiatives, corporate or investor relations materials and publications, internal training, and marketing purposes. These uses may be in any form or medium, including, without limitation, print and broadcast media, social media, and other online channels.</p>
+          <p>I hereby grant Scholar Rock, Inc. and its affiliates and its and their respective employees, agents, licensees, successors and assigns ("Scholar Rock") the right and license: (a) to take or record photographs and/or audio, video and/or audio visual recordings of me on or in any media or format now known or hereafter developed ("New Media"); (b) to copy, distribute, display, modify and otherwise use any other photographs or audio, video or audio visual recordings that I provide to Scholar Rock ("Provided Media", and together with New Media, "Media"); and (c) to use my name, sobriquets, image, voice, likeness, quotes, signature and/or biographical material ("NIL") in connection with, including as incorporated in, the Media, in each case, for any lawful purpose. Such uses may include, without limitation, Scholar Rock's disease education initiatives, corporate or investor relations materials and publications, internal training, and marketing purposes. These uses may be in any form or medium, including, without limitation, print and broadcast media, social media, and other online channels.</p>
 
-          <p>I acknowledge that I may not be provided the opportunity to, and waive any right to, inspect or approve the Media and any uses of the Media or NIL as contemplated herein prior to use by Scholar Rock. I understand that Scholar Rock’s use of the Media as indicated above may reveal that I have a particular disease, participated in a particular clinical trial, or take a particular investigational product developed by Scholar Rock.</p>
+          <p>I acknowledge that I may not be provided the opportunity to, and waive any right to, inspect or approve the Media and any uses of the Media or NIL as contemplated herein prior to use by Scholar Rock. I understand that Scholar Rock's use of the Media as indicated above may reveal that I have a particular disease, participated in a particular clinical trial, or take a particular investigational product developed by Scholar Rock.</p>
 
           <p>I understand and agree I have no right, title, or interest in or to the New Media, which is exclusively owned by Scholar Rock. I authorize Scholar Rock to copyright the New Media. Additionally, I waive any right to receive any payment or other compensation, now or in the future, arising from or related to any use of the Media or NIL as contemplated herein. I further acknowledge that Scholar Rock is under no obligation to use the Media.</p>
 
@@ -93,7 +150,7 @@
 
       <div class="flex justify-between">
         <button onclick="confirmConsent(true)" class="text-sm underline text-red-600">I do not agree</button>
-        <button onclick="handleConsent()" class="bg-black text-white border-2 border-black rounded-full px-6 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
+        <button onclick="validateStep3()" class="bg-black text-white border-2 border-black rounded-full px-6 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
       </div>
     </div>
 
@@ -102,30 +159,69 @@
       <h2 class="text-2xl font-bold">Your Submission</h2>
       <canvas id="finalCanvas" width="1080" height="1080" class="w-full border-2 border-black rounded"></canvas>
       <div class="flex justify-center space-x-3 pt-2">
-        <button onclick="shareImage()" class="bg-[#F34FE1] text-black border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white">Share</button>
-        <button onclick="nextStep()" class="bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
+        <button onclick="shareImage()" class="bg-[#F34FE1] text-black border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white">Share this Image</button>
+        <button id="nextAfterShare" onclick="nextStep()" class="hidden bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
       </div>
     </div>
 
     <!-- Screen 5: CRM Form -->
-    <div id="step5" class="hidden space-y-6 text-left">
+    <div id="step5" class="hidden space-y-4 text-left">
       <h2 class="text-2xl font-bold text-center">Stay Connected</h2>
-      <input id="crmFirst" class="w-full border-2 border-black p-3 rounded" placeholder="First Name (required)" required />
-      <input id="crmLast" class="w-full border-2 border-black p-3 rounded" placeholder="Last Name (required)" required />
-      <input id="crmEmail" class="w-full border-2 border-black p-3 rounded" placeholder="Email Address (required)" required />
-      <input id="crmAddress" class="w-full border-2 border-black p-3 rounded" placeholder="Address" />
-      <input id="crmCity" class="w-full border-2 border-black p-3 rounded" placeholder="City" />
-      <input id="crmState" class="w-full border-2 border-black p-3 rounded" placeholder="State" />
-      <input id="crmZip" class="w-full border-2 border-black p-3 rounded" placeholder="Zip Code" />
-      <input id="crmPhone" class="w-full border-2 border-black p-3 rounded" placeholder="Phone Number" />
-      <select id="crmRole" class="w-full border-2 border-black p-3 rounded" required>
-        <option disabled selected>Which best describes you? (required)</option>
-        <option>Patient</option>
-        <option>Caregiver</option>
-        <option>Other</option>
-      </select>
-      <p class="text-xs text-center mt-2">By clicking “Submit,” you acknowledge that you have read, understand, and agree to our <a href="https://scholarrock.com/privacy-policy/" target="_blank" class="underline">Privacy Policy</a>.</p>
-      <button onclick="submitForm()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
+      
+      <div class="text-left">
+        <label class="block mb-1 required">First Name</label>
+        <input id="crmFirst" class="w-full border-2 border-black p-3 rounded" placeholder="First Name" required />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1 required">Last Name</label>
+        <input id="crmLast" class="w-full border-2 border-black p-3 rounded" placeholder="Last Name" required />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1 required">Email Address</label>
+        <input id="crmEmail" class="w-full border-2 border-black p-3 rounded" placeholder="Email Address" required type="email" />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1">Address</label>
+        <input id="crmAddress" class="w-full border-2 border-black p-3 rounded" placeholder="Address" />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1">City</label>
+        <input id="crmCity" class="w-full border-2 border-black p-3 rounded" placeholder="City" />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1">State</label>
+        <input id="crmState" class="w-full border-2 border-black p-3 rounded" placeholder="State" />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1">Zip Code</label>
+        <input id="crmZip" class="w-full border-2 border-black p-3 rounded" placeholder="Zip Code" />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1">Phone Number</label>
+        <input id="crmPhone" class="w-full border-2 border-black p-3 rounded" placeholder="Phone Number" type="tel" />
+      </div>
+      
+      <div class="text-left">
+        <label class="block mb-1 required">Which best describes you?</label>
+        <select id="crmRole" class="w-full border-2 border-black p-3 rounded" required>
+          <option value="" disabled selected>Select an option</option>
+          <option>Patient</option>
+          <option>Caregiver</option>
+          <option>Other</option>
+        </select>
+      </div>
+      
+      <p class="text-sm text-left text-gray-600">* Required fields</p>
+      
+      <p class="text-xs text-center mt-2">By clicking "Submit," you acknowledge that you have read, understand, and agree to our <a href="https://scholarrock.com/privacy-policy/" target="_blank" class="underline">Privacy Policy</a>.</p>
+      <button onclick="validateAndSubmitForm()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
     </div>
 
     <!-- Thank You Modal -->
@@ -140,7 +236,34 @@
 
 <script>
 let currentStep = 1;
-let userData = { firstName: '', lastName: '', age: '', response: '', photo: null, photoURL: '' };
+let userData = { 
+  firstName: '', 
+  lastName: '', 
+  age: '', 
+  email: '',
+  displayAge: true, 
+  response: '', 
+  photo: null, 
+  photoURL: '',
+  hasShared: false
+};
+
+// Validate email format
+function isValidEmail(email) {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
+
+// Validate phone number
+function isValidPhone(phone) {
+  const cleaned = phone.replace(/\D/g, '');
+  return cleaned.length >= 10;
+}
+
+function updateProgressBar(step) {
+  const progress = step * 20; // 20% per step
+  document.getElementById('progressBar').style.width = `${progress}%`;
+}
 
 function showStep(step) {
   for (let i = 1; i <= 5; i++) {
@@ -148,6 +271,7 @@ function showStep(step) {
   }
   document.getElementById(`step${step}`).classList.remove('hidden');
   currentStep = step;
+  updateProgressBar(step);
 }
 
 function nextStep() {
@@ -157,28 +281,87 @@ function nextStep() {
   if (next === 5) {
     document.getElementById('crmFirst').value = userData.firstName;
     document.getElementById('crmLast').value = userData.lastName;
+    document.getElementById('crmEmail').value = userData.email;
   }
 
   showStep(next);
 }
 
-function goBack() { if (currentStep > 1) showStep(currentStep - 1); }
-function startOver() { location.reload(); }
+function goBack() { 
+  if (currentStep > 1) showStep(currentStep - 1); 
+}
 
-function saveStep2() {
-  userData.firstName = document.getElementById('firstName').value.trim();
-  userData.lastName = document.getElementById('lastName').value.trim();
-  userData.age = parseInt(document.getElementById('age').value);
-  userData.response = document.getElementById('muscleText').value.trim();
+function startOver() { 
+  location.reload(); 
+}
 
-  document.getElementById('consentName').value = `${userData.firstName} ${userData.lastName}`;
+function validateStep2() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const age = document.getElementById('age').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const response = document.getElementById('muscleText').value.trim();
+  const displayAge = document.getElementById('displayAge').checked;
+  
+  if (!firstName || !lastName || !age || !email || !response) {
+    alert("Please complete all required fields.");
+    return;
+  }
+  
+  if (!isValidEmail(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+  
+  if (isNaN(age) || age <= 0) {
+    alert("Please enter a valid age.");
+    return;
+  }
+  
+  userData.firstName = firstName;
+  userData.lastName = lastName;
+  userData.age = parseInt(age);
+  userData.email = email;
+  userData.displayAge = displayAge;
+  userData.response = response;
+
+  document.getElementById('consentName').value = `${firstName} ${lastName}`;
   document.getElementById('consentDate').value = new Date().toLocaleDateString('en-US');
 
+  // If under 18, accordion should be open by default
   if (userData.age < 18) {
     document.getElementById('consentAccordion').open = true;
     document.getElementById('guardianFields').classList.remove('hidden');
+  } else {
+    document.getElementById('consentAccordion').open = false;
+    document.getElementById('guardianFields').classList.add('hidden');
   }
 
+  nextStep();
+}
+
+function validateStep3() {
+  if (!userData.photo) {
+    alert("Please upload a photo to continue.");
+    return;
+  }
+  
+  if (!document.getElementById('consentAgree').checked) {
+    alert("You must agree to the Consent & Release to continue.");
+    return;
+  }
+  
+  // If under 18, require guardian name
+  if (userData.age < 18) {
+    const guardianName = document.getElementById('guardianName').value.trim();
+    if (!guardianName) {
+      alert("Please provide a parent/guardian name.");
+      return;
+    }
+    userData.guardianName = guardianName;
+  }
+  
+  drawFinalImage();
   nextStep();
 }
 
@@ -194,17 +377,8 @@ function previewPhoto() {
 }
 
 function confirmConsent() {
-  const confirmExit = confirm("If you do not agree, you’ll be sent back to the start and cannot participate.");
+  const confirmExit = confirm("If you do not agree, you'll be sent back to the start and cannot participate.");
   if (confirmExit) startOver();
-}
-
-function handleConsent() {
-  if (!document.getElementById('consentAgree').checked) {
-    alert("You must agree to the Consent & Release to continue.");
-    return;
-  }
-  drawFinalImage();
-  nextStep();
 }
 
 function drawFinalImage() {
@@ -218,25 +392,36 @@ function drawFinalImage() {
     const spacing = 40;
     const top = 60;
 
+    // Draw title
     ctx.textAlign = 'center';
     ctx.fillStyle = '#000';
     ctx.font = 'bold 60px Futura PT, Futura, sans-serif';
     ctx.fillText('LIFE TAKES MUSCLE', canvas.width / 2, top);
 
+    // Draw uploaded image
     ctx.drawImage(img, 240, top + spacing, 600, 600);
 
+    // Draw first name and last initial only
     ctx.font = 'bold 42px Futura PT, Futura, sans-serif';
-    ctx.fillText(`${userData.firstName} ${userData.lastName[0]}.`, canvas.width / 2, top + 720);
+    ctx.fillText(`${userData.firstName}`, canvas.width / 2, top + 720);
 
-    ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
-    ctx.fillText(`Age ${userData.age}`, canvas.width / 2, top + 770);
+    // Draw age if display age toggle is on
+    if (userData.displayAge) {
+      ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
+      ctx.fillText(`Age ${userData.age}`, canvas.width / 2, top + 770);
+    }
 
+    // Draw prompt text and response
+    const promptY = userData.displayAge ? top + 820 : top + 780;
+    const responseY = userData.displayAge ? top + 870 : top + 830;
+    
     ctx.font = 'italic 28px Futura PT, Futura, sans-serif';
-    ctx.fillText("Muscle means I can…", canvas.width / 2, top + 820);
+    ctx.fillText("Muscle means I can…", canvas.width / 2, promptY);
 
     ctx.font = 'italic 34px Futura PT, Futura, sans-serif';
-    ctx.fillText(`"${userData.response}"`, canvas.width / 2, top + 870);
+    ctx.fillText(`"${userData.response}"`, canvas.width / 2, responseY);
 
+    // Draw footer
     ctx.font = 'bold 24px Futura PT, Futura, sans-serif';
     ctx.fillText('LIFETAKESMUSCLE.COM', canvas.width / 2, 1040);
   };
@@ -248,24 +433,53 @@ function shareImage() {
   canvas.toBlob(blob => {
     const file = new File([blob], 'life-takes-muscle.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: 'Life Takes Muscle' });
+      navigator.share({ files: [file], title: 'Life Takes Muscle' })
+        .then(() => {
+          // After sharing, show the Next button
+          userData.hasShared = true;
+          document.getElementById('nextAfterShare').classList.remove('hidden');
+        })
+        .catch(err => {
+          console.error('Error sharing:', err);
+          // Still show Next button even if sharing failed
+          userData.hasShared = true;
+          document.getElementById('nextAfterShare').classList.remove('hidden');
+        });
     } else {
-      alert('Sharing not supported on this device.');
+      alert('Sharing not supported on this device. You can download the image instead.');
+      // Still show Next button if sharing is not supported
+      userData.hasShared = true;
+      document.getElementById('nextAfterShare').classList.remove('hidden');
     }
   });
 }
 
-function submitForm() {
+function validateAndSubmitForm() {
   const first = document.getElementById('crmFirst').value.trim();
   const last = document.getElementById('crmLast').value.trim();
   const email = document.getElementById('crmEmail').value.trim();
+  const phone = document.getElementById('crmPhone').value.trim();
   const role = document.getElementById('crmRole').value;
 
-  if (!first || !last || !email || role === "Select the option that best describes you") {
+  if (!first || !last || !email || !role) {
     alert("Please complete all required fields.");
     return;
   }
-
+  
+  if (!isValidEmail(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+  
+  if (phone && !isValidPhone(phone)) {
+    alert("Please enter a valid phone number (at least 10 digits).");
+    return;
+  }
+  
+  // Here you would add email sending functionality using a client-side solution
+  // For example, a service like EmailJS, Formspree, etc.
+  
+  // For now, just show the thank you modal
   document.getElementById('thankYouModal').classList.remove('hidden');
 }
 </script>
