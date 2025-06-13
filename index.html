@@ -266,7 +266,7 @@
       
       <p class="text-sm text-left text-gray-600">* Required fields</p>
       
-      <button onclick="validateAndSubmitForm()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
+      <button id="sendBtn" onclick="validateAndSubmitForm()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
     </div>
 
     <!-- Thank You Modal -->
@@ -640,5 +640,38 @@ function validateAndSubmitForm() {
 // Initialize progress bar
 updateProgressBar(1);
 </script>
+<script>
+    document.getElementById('sendBtn').addEventListener('click', async () => {
+      // Replace these with your actual values or logic
+      const email = document.getElementById('crmEmail').value.trim();
+      const firstName = document.getElementById('crmFirst').value.trim();
+      const lastName = document.getElementById('crmLast').value.trim();
+
+      const phone = document.getElementById('crmPhone').value.trim();
+      const role = document.getElementById('crmRole').value;
+      const address = document.getElementById('crmAddress').value;
+      const city = document.getElementById('crmCity').value;
+      const state = document.getElementById('crmState').value;
+      const zip = document.getElementById('crmZip').value;
+      
+      const payload = { email, firstName, lastName, address, city, state, zip, phone, role};
+
+      try {
+        const response = await fetch('/.netlify/functions/submitToSFMC', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        document.getElementById('response').innerText = result.message || 'Success';
+      } catch (err) {
+        console.error('Error sending data:', err);
+        document.getElementById('response').innerText = 'Error submitting data.';
+      }
+    });
+  </script>
 </body>
 </html>
