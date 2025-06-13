@@ -43,11 +43,14 @@
   </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
+  <!-- Hidden logo image for canvas use -->
+  <img id="logoImage" src="LTM_wordmark_v2 1.png" style="display: none;" crossorigin="anonymous">
+
   <div id="app" class="w-full max-w-md space-y-6 text-center relative">
 
     <!-- Progress Bar -->
     <div class="progress-container">
-      <div id="progressBar" class="progress-bar" style="width: 20%"></div>
+      <div id="progressBar" class="progress-bar" style="width: 0%"></div>
     </div>
 
     <!-- Global Nav -->
@@ -159,8 +162,9 @@
       <h2 class="text-2xl font-bold">Your Submission</h2>
       <canvas id="finalCanvas" width="1080" height="1080" class="w-full border-2 border-black rounded"></canvas>
       <div class="flex justify-center space-x-3 pt-2">
-        <button onclick="shareImage()" class="bg-[#F34FE1] text-black border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white">Share this Image</button>
+        <button onclick="shareImage()" class="bg-[#F34FE1] text-black border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white">Share</button>
         <button id="nextAfterShare" onclick="nextStep()" class="hidden bg-black text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Next</button>
+        <button id="downloadAfterShare" onclick="downloadImageDirect()" class="hidden bg-gray-700 text-white border-2 border-black rounded-full px-4 py-2 text-sm font-bold hover:scale-105 hover:bg-white hover:text-black">Download</button>
       </div>
     </div>
 
@@ -218,9 +222,25 @@
         </select>
       </div>
       
+      <!-- Terms & Conditions Accordion -->
+      <details class="border border-black p-4 rounded bg-yellow-100">
+        <summary class="font-bold cursor-pointer select-none">Terms & Conditions (Click to Expand)</summary>
+        <div class="mt-4 text-sm leading-relaxed">
+          <p>By clicking "submit," you acknowledge that you have read, understand, and agree to our Privacy Policy and Terms of Use. You further authorize Scholar Rock to contact you by email, telephone call,/text message, and/or mail for marketing purposes to provide you with information about Scholar Rock's products and services (including information about SMA and other topics relevant to individuals living with, or caring for other individuals living with, SMA), to participate in market research, or about different topics of interest. You understand your consent is not required to purchase or receive any goods or services from Scholar Rock. Message and data rates may apply. Message frequency varies. You understand that you may revoke your consent to receive marketing communications by (1) clicking the "unsubscribe" link in any such email; (2) replying "STOP" to text messages; and (3) relative to phone calls, informing the caller that you no longer wish to receive marketing phone calls from Scholar Rock.</p>
+        </div>
+      </details>
+
+      <label class="flex items-start gap-2 mt-2 text-sm">
+        <input type="checkbox" id="termsAgree" class="mt-1" />
+        <span>I acknowledge and agree to the Terms & Conditions above.</span>
+      </label>
+
+      <div class="flex justify-between">
+        <button onclick="confirmTerms()" class="text-sm underline text-red-600">I do not agree</button>
+      </div>
+      
       <p class="text-sm text-left text-gray-600">* Required fields</p>
       
-      <p class="text-xs text-center mt-2">By clicking "Submit," you acknowledge that you have read, understand, and agree to our <a href="https://scholarrock.com/privacy-policy/" target="_blank" class="underline">Privacy Policy</a>.</p>
       <button onclick="validateAndSubmitForm()" class="bg-black text-white border-2 border-black rounded-full px-6 py-3 text-lg font-bold w-full hover:scale-105 hover:bg-white hover:text-black">Submit</button>
     </div>
 
@@ -261,7 +281,7 @@ function isValidPhone(phone) {
 }
 
 function updateProgressBar(step) {
-  const progress = step * 20; // 20% per step
+  const progress = (step - 1) * 20; // 0%, 20%, 40%, 60%, 80%
   document.getElementById('progressBar').style.width = `${progress}%`;
 }
 
@@ -381,77 +401,138 @@ function confirmConsent() {
   if (confirmExit) startOver();
 }
 
+function confirmTerms() {
+  const confirmExit = confirm("If you do not agree, you'll be sent back to the start and cannot participate.");
+  if (confirmExit) startOver();
+}
+
 function drawFinalImage() {
   const canvas = document.getElementById('finalCanvas');
   const ctx = canvas.getContext('2d');
+  
+  // Fill background with yellow
   ctx.fillStyle = '#FDFF33';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const img = new Image();
-  img.onload = function () {
-    const spacing = 40;
-    const top = 60;
+  
+  img.onload = function() {
+    // Draw uploaded photo first
+    const photoSize = 500;
+    const photoX = (canvas.width - photoSize) / 2;
+    const photoY = 150;
+    
+    ctx.drawImage(img, photoX, photoY, photoSize, photoSize);
 
-    // Draw title
+    // Draw first name
     ctx.textAlign = 'center';
     ctx.fillStyle = '#000';
-    ctx.font = 'bold 60px Futura PT, Futura, sans-serif';
-    ctx.fillText('LIFE TAKES MUSCLE', canvas.width / 2, top);
-
-    // Draw uploaded image
-    ctx.drawImage(img, 240, top + spacing, 600, 600);
-
-    // Draw first name and last initial only
-    ctx.font = 'bold 42px Futura PT, Futura, sans-serif';
-    ctx.fillText(`${userData.firstName}`, canvas.width / 2, top + 720);
+    ctx.font = 'bold 64px Futura, Arial, sans-serif';
+    ctx.fillText(userData.firstName, canvas.width / 2, photoY + photoSize + 80);
 
     // Draw age if display age toggle is on
+    let ageY = photoY + photoSize + 140;
     if (userData.displayAge) {
-      ctx.font = 'italic 36px Futura PT, Futura, sans-serif';
-      ctx.fillText(`Age ${userData.age}`, canvas.width / 2, top + 770);
+      ctx.font = 'normal 42px Futura, Arial, sans-serif';
+      ctx.fillText(`Age ${userData.age}`, canvas.width / 2, ageY);
+      ageY += 60;
     }
 
     // Draw prompt text and response
-    const promptY = userData.displayAge ? top + 820 : top + 780;
-    const responseY = userData.displayAge ? top + 870 : top + 830;
+    const promptY = ageY + 20;
+    const responseY = promptY + 50;
     
-    ctx.font = 'italic 28px Futura PT, Futura, sans-serif';
+    ctx.font = 'normal 36px Futura, Arial, sans-serif';
     ctx.fillText("Muscle means I can…", canvas.width / 2, promptY);
 
-    ctx.font = 'italic 34px Futura PT, Futura, sans-serif';
-    ctx.fillText(`"${userData.response}"`, canvas.width / 2, responseY);
+    ctx.font = 'italic 40px Futura, Arial, sans-serif';
+    
+    // Wrap the response text if it's too long
+    const maxWidth = 900;
+    const words = userData.response.split(' ');
+    let line = '';
+    const lineHeight = 48;
+    let currentY = responseY;
+    
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+      
+      if (testWidth > maxWidth && n > 0) {
+        ctx.fillText(`"${line.trim()}"`, canvas.width / 2, currentY);
+        line = words[n] + ' ';
+        currentY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(`"${line.trim()}"`, canvas.width / 2, currentY);
 
     // Draw footer
-    ctx.font = 'bold 24px Futura PT, Futura, sans-serif';
+    ctx.font = 'bold 28px Futura, Arial, sans-serif';
     ctx.fillText('LIFETAKESMUSCLE.COM', canvas.width / 2, 1040);
+
+    // Now try to draw the logo
+    const logoImg = new Image();
+    logoImg.onload = function() {
+      console.log('Logo loaded successfully');
+      const logoAspectRatio = 1001 / 637;
+      const logoDisplayWidth = 180;
+      const logoDisplayHeight = logoDisplayWidth / logoAspectRatio;
+      const logoX = canvas.width - logoDisplayWidth - 40;
+      const logoY = 40;
+      ctx.drawImage(logoImg, logoX, logoY, logoDisplayWidth, logoDisplayHeight);
+    };
+    logoImg.onerror = function() {
+      console.log('Logo failed to load - check file path');
+    };
+    logoImg.src = 'LTM_wordmark_v2 1.png';
   };
+  
   img.src = userData.photoURL;
 }
 
 function shareImage() {
   const canvas = document.getElementById('finalCanvas');
   canvas.toBlob(blob => {
-    const file = new File([blob], 'life-takes-muscle.png', { type: 'image/png' });
+    const file = new File([blob], 'LTM.png', { type: 'image/png' });
+    
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       navigator.share({ files: [file], title: 'Life Takes Muscle' })
         .then(() => {
-          // After sharing, show the Next button
+          // After successful sharing, show Next and Download buttons
           userData.hasShared = true;
           document.getElementById('nextAfterShare').classList.remove('hidden');
+          document.getElementById('downloadAfterShare').classList.remove('hidden');
         })
         .catch(err => {
-          console.error('Error sharing:', err);
-          // Still show Next button even if sharing failed
+          console.log('Share cancelled or failed:', err);
+          // Even if sharing failed, show the buttons so user can continue
           userData.hasShared = true;
           document.getElementById('nextAfterShare').classList.remove('hidden');
+          document.getElementById('downloadAfterShare').classList.remove('hidden');
         });
     } else {
-      alert('Sharing not supported on this device. You can download the image instead.');
-      // Still show Next button if sharing is not supported
+      // If sharing not supported, automatically trigger download and show buttons
+      downloadImage(canvas);
       userData.hasShared = true;
       document.getElementById('nextAfterShare').classList.remove('hidden');
+      document.getElementById('downloadAfterShare').classList.remove('hidden');
     }
   });
+}
+
+function downloadImageDirect() {
+  const canvas = document.getElementById('finalCanvas');
+  downloadImage(canvas);
+}
+
+function downloadImage(canvas) {
+  const link = document.createElement('a');
+  link.download = 'LTM.png';
+  link.href = canvas.toDataURL();
+  link.click();
 }
 
 function validateAndSubmitForm() {
@@ -476,12 +557,20 @@ function validateAndSubmitForm() {
     return;
   }
   
+  if (!document.getElementById('termsAgree').checked) {
+    alert("You must agree to the Terms & Conditions to continue.");
+    return;
+  }
+  
   // Here you would add email sending functionality using a client-side solution
   // For example, a service like EmailJS, Formspree, etc.
   
   // For now, just show the thank you modal
   document.getElementById('thankYouModal').classList.remove('hidden');
 }
+
+// Initialize progress bar
+updateProgressBar(1);
 </script>
 </body>
 </html>
