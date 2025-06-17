@@ -498,7 +498,7 @@ function drawFinalImage() {
     userImg.onload = function() {
       // Position user photo - SQUARE, centered in left space
       const photoSize = canvas.height * 0.55; // Square size - INCREASED from 0.45
-      const leftSpaceWidth = canvas.width * 0.43; // Left half of canvas (before yellow circle)
+      const leftSpaceWidth = canvas.width * 0.5; // Left half of canvas (before yellow circle)
       const photoX = (leftSpaceWidth - photoSize) / 2; // Center in left space
       const photoY = (canvas.height - photoSize) / 2; // Center vertically
       
@@ -574,7 +574,7 @@ function drawFinalImage() {
     const userImg = new Image();
     userImg.onload = function() {
       const photoSize = canvas.height * 0.55; // Updated to match main code
-      const leftSpaceWidth = canvas.width * 0.5;
+      const leftSpaceWidth = canvas.width * 0.43; // Updated to match main code
       const photoX = (leftSpaceWidth - photoSize) / 2;
       const photoY = (canvas.height - photoSize) / 2;
       
@@ -583,6 +583,15 @@ function drawFinalImage() {
 
       loader.classList.add('hidden');
       canvas.style.display = 'block';
+      
+      // MISSING: Call nextStep to advance to screen 4
+      nextStep();
+    };
+    userImg.onerror = function() {
+      loader.classList.add('hidden');
+      canvas.style.display = 'block';
+      alert('There was an issue loading your photo. Please try again or use a different image.');
+      // Don't call nextStep if user image fails
     };
     userImg.src = userData.photoURL;
   };
@@ -695,7 +704,10 @@ updateProgressBar(1);
       const state = document.getElementById('crmState').value;
       const zip = document.getElementById('crmZip').value;
       
-      const payload = { email, firstName, lastName, address, city, state, zip, phone, role};
+      const acknowledge = document.getElementById('termsAgree').value;
+      const guardianName =  userData.guardianName;
+      
+      const payload = { email, firstName, lastName, address, city, state, zip, phone, role, acknowledge, guardianName};
 
       try {
         const response = await fetch('/.netlify/functions/submitToSFMC', {
