@@ -6,7 +6,7 @@ exports.handler = async function (event, context) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const { email, firstName, lastName, address, city, state, zip, phone, role} = JSON.parse(event.body);
+  const { email, firstName, lastName, address, city, state, zip, phone, role, acknowledge, guardianName} = JSON.parse(event.body);
 
   const clientId = process.env.SFMC_CLIENT_ID;
   const clientSecret = process.env.SFMC_CLIENT_SECRET;
@@ -39,7 +39,7 @@ exports.handler = async function (event, context) {
       body: JSON.stringify([
         {
           keys: { "Email Address": email },
-          values: { "First Name": firstName, "Last Name": lastName, "Address": address, "City": city, "State": state, "Zip Code": zip, "Phone": phone, "Patient Type": role}
+          values: { "First Name": firstName, "Last Name": lastName, "Address": address, "City": city, "State": state, "Zip Code": zip, "Phone": phone, "Patient Type": role, "Acknowledge Terms": acknowledge, "Guardian": guardianName}
         }
       ])
     });

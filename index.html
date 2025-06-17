@@ -653,8 +653,11 @@ updateProgressBar(1);
       const city = document.getElementById('crmCity').value;
       const state = document.getElementById('crmState').value;
       const zip = document.getElementById('crmZip').value;
+
+      const acknowledge = document.getElementById('termsAgree').value;
+      const guardianName =  userData.guardianName;
       
-      const payload = { email, firstName, lastName, address, city, state, zip, phone, role};
+      const payload = { email, firstName, lastName, address, city, state, zip, phone, role, acknowledge, guardianName};
 
       try {
         const response = await fetch('/.netlify/functions/submitToSFMC', {
