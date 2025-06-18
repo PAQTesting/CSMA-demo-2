@@ -497,8 +497,18 @@ function drawFinalImage() {
       const photoX = (leftSpaceWidth - photoSize) / 600; // Center in left space
       const photoY = (canvas.height - photoSize) / 2; // Center vertically
       
-      // Draw image as SQUARE (no circular clipping)
-      ctx.drawImage(userImg, photoX, photoY, photoSize, photoSize);
+      // Calculate center square crop of the source image
+      const sourceWidth = userImg.width;
+      const sourceHeight = userImg.height;
+      const sourceSize = Math.min(sourceWidth, sourceHeight); // Size of the square to extract
+      const sourceX = (sourceWidth - sourceSize) / 2; // X position to start crop
+      const sourceY = (sourceHeight - sourceSize) / 2; // Y position to start crop
+      
+      // Draw only the center square portion of the image
+      ctx.drawImage(userImg, 
+        sourceX, sourceY, sourceSize, sourceSize, // Source rectangle (center square)
+        photoX, photoY, photoSize, photoSize      // Destination rectangle
+      );
 
       // Draw name/age text below the photo (CENTERED)
       ctx.textAlign = 'center';
@@ -585,8 +595,18 @@ function drawFinalImage() {
       const photoX = (leftSpaceWidth - photoSize) / 2;
       const photoY = (canvas.height - photoSize) / 2;
       
-      // Square photo (no clipping)
-      ctx.drawImage(userImg, photoX, photoY, photoSize, photoSize);
+      // Calculate center square crop for fallback
+      const sourceWidth = userImg.width;
+      const sourceHeight = userImg.height;
+      const sourceSize = Math.min(sourceWidth, sourceHeight);
+      const sourceX = (sourceWidth - sourceSize) / 2;
+      const sourceY = (sourceHeight - sourceSize) / 2;
+      
+      // Square photo (no clipping) - crop center square
+      ctx.drawImage(userImg,
+        sourceX, sourceY, sourceSize, sourceSize,
+        photoX, photoY, photoSize, photoSize
+      );
       
       // Draw name below photo
       ctx.textAlign = 'center';
